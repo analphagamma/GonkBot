@@ -45,3 +45,6 @@ env.bak/
 venv.bak/
 pyvenv.cfg
 pip-selfcheck.json
+
+# project-specific files
+praw.ini
