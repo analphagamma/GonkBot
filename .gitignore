@@ -48,3 +48,4 @@ pip-selfcheck.json
 
 # project-specific files
 praw.ini
+login.json

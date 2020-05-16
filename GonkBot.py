@@ -1,14 +1,89 @@
 import praw
 from time import sleep
+import os
+import json
 
-KEYWORD = 'gonk'
-SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
-              'EquelMemes', 'legostarwars', 'Gonk', 'CultOfGonk', 
-              'StarWarsBattlefront', 'starwarsmemes', 'EmpireDidNothingWrong']
+class LoginFileNotFound(Exception):
+    '''
+    Custom exception to be raised when the json file with the
+    login info is not found.
+    '''
+    pass
 
-TESTSUBREDDITS = ['NoVowelBotTest']
+class NotJSONFileError(Exception):
+    '''
+    Custom exception to be raised when the credentials file
+    isn't a valid json
+    '''
+    pass
 
-LOGFILE = 'replied_to.txt'
+class IncompleteLoginDetailsError(Exception):
+    '''
+    Custom exception for incorrect credentials file structure
+    '''
+    pass
+
+def get_login_details(login_file):
+    '''
+    Return the login info as a dictionary.
+    It contains the following keys:
+    client_id
+    client_secret
+    user_agent
+    user_name
+    password
+    '''
+
+    # test if file is present
+    if os.path.isfile(login_file):
+        # if the bot is run locally we get the login details from the JSON file
+        f = open(login_file, 'r')
+        # test if JSON file is valid
+        try:
+            login = json.load(f)
+        except json.decoder.JSONDecodeError:
+            f.close() # close the file before panicking
+            raise NotJSONFileError
+        f.close() # we don't need the file open anymore
+
+        # test for empty values or missing keys
+        if '' in login.values() or \
+            None in [login.get('client_id'),
+                    login.get('client_secret'),
+                    login.get('user_agent'),
+                    login.get('username'),
+                    login.get('password')]:
+            raise IncompleteLoginDetailsError
+
+        return login
+    else:
+        # if run on Heroku we need to use the config vars
+        login = {
+            'username'      : os.environ.get('username'),
+            'password'      : os.environ.get('password'),
+            'client_id'     : os.environ.get('client_id'),
+            'client_secret' : os.environ.get('client_secret'),
+            'user_agent'    : os.environ.get('user_agent')
+        }
+        # test for empty values or missing keys
+        if '' in login.values() or \
+            None in [login.get('client_id'),
+                    login.get('client_secret'),
+                    login.get('user_agent'),
+                    login.get('username'),
+                    login.get('password')]:
+            raise IncompleteLoginDetailsError
+        else:
+            return login
+
+def init_bot(login):
+    # initialize Reddit object
+    return praw.Reddit(client_id     = login.get('client_id'),
+                        client_secret = login.get('client_secret'),
+                        user_agent    = login.get('user_agent'),
+                        username     = login.get('username'),
+                        password      = login.get('password')
+                        )
             
 def make_comment(target):
     '''
@@ -47,11 +122,10 @@ def already_replied(comment_id):
         else:
             return False
 
-def main(sub_list):
-    # initialising Reddit instance
-    r = praw.Reddit('GonkBot')
+def main(reddit, sub_list):
+
     # getting Subreddit object from list
-    subreddit = r.subreddit('+'.join(sub_list))
+    subreddit = reddit.subreddit('+'.join(sub_list))
     for comment in subreddit.comments():
         # if the KEYWORD is in the comment and it wasn't made by us
         # reply to comment
@@ -61,6 +135,16 @@ def main(sub_list):
             make_comment(comment)    
 
 if __name__ == '__main__':
+    # defining constants
+    KEYWORD = 'gonk'
+    SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
+                'EquelMemes', 'legostarwars', 'Gonk', 'CultOfGonk', 
+                'StarWarsBattlefront', 'starwarsmemes', 'EmpireDidNothingWrong']
+
+    TESTSUBREDDITS = ['NoVowelBotTest']
+
+    LOGFILE = 'replied_to.txt'
+
     # checking if a log file exists
     try:
         f = open(LOGFILE, 'r')
@@ -70,6 +154,8 @@ if __name__ == '__main__':
         print('Log file created')
     else:
         print('Log file found')
-
+    # initialising Reddit instance
+    r = init_bot(get_login_details('login.json'))
+    print('Bot initialised. Login successful.')
     while True:
-        main(SUBREDDITS)
+        main(r, SUBREDDITS)
