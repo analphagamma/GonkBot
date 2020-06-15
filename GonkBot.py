@@ -132,16 +132,15 @@ def main(reddit, sub_list):
         if KEYWORD in comment.body.lower() and \
                 comment.author.name != 'Gonk-Bot' and \
                 not already_replied(comment.id):
-            make_comment(comment)    
+            make_comment(comment)
 
 if __name__ == '__main__':
     # defining constants
     KEYWORD = 'gonk'
     SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
                 'EquelMemes', 'legostarwars', 'Gonk', 'CultOfGonk', 
-                'StarWarsBattlefront', 'starwarsmemes', 'EmpireDidNothingWrong']
-
-    TESTSUBREDDITS = ['NoVowelBotTest']
+                'StarWarsBattlefront', 'starwarsmemes', 'EmpireDidNothingWrong',
+                'saltierthancrait', 'Gonkwild', 'KOTORmemes']
 
     LOGFILE = 'replied_to.txt'
 
