@@ -138,9 +138,16 @@ if __name__ == '__main__':
     # defining constants
     KEYWORD = 'gonk'
     SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
-                'EquelMemes', 'legostarwars', 'Gonk', 'CultOfGonk', 
-                'StarWarsBattlefront', 'starwarsmemes', 'EmpireDidNothingWrong',
-                'saltierthancrait', 'Gonkwild', 'KOTORmemes']
+                'EquelMemes', 'Gonk', 'CultOfGonk', 
+                'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
+                'FallenOrder', 'saltierthancrait', 'Gonkwild',
+                'KOTORmemes', 'starwarsmemes', 'memes',
+                'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
+                'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
+                'StarWarsSpeculation', 'kotor', 'swtor',
+                'darthjarjar', 'starwarscanon', 'starwarstattoo',
+                'starwarscollecting', 'starwarscollectibles',
+                'movies', 'scifi']
 
     LOGFILE = 'replied_to.txt'
 
