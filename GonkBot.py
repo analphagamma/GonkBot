@@ -132,7 +132,9 @@ def check_mention(comment):
     Checks if the comment was made in reply to the bot's comment.
     '''
     parent_comment = comment.parent()
-    if not parent_comment or not isinstance(parent_comment, praw.models.Comment):
+    if not parent_comment \
+        or not isinstance(parent_comment, praw.models.Comment) \
+        or not parent_comment.author:
         return False
     elif parent_comment.author.name == 'Gonk-Bot':
         return True
