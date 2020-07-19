@@ -22,6 +22,37 @@ class IncompleteLoginDetailsError(Exception):
     Custom exception for incorrect credentials file structure
     '''
     pass
+##############
+# defining constants
+# if debug is active the comment will not be posted live only to STDOUT
+DEBUG = False
+# subreddits to scan
+SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
+            'EquelMemes', 'Gonk', 'CultOfGonk', 
+            'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
+            'FallenOrder', 'saltierthancrait', 'Gonkwild',
+            'KOTORmemes', 'starwarsmemes', 'memes',
+            'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
+            'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
+            'StarWarsSpeculation', 'kotor', 'swtor',
+            'darthjarjar', 'starwarscanon', 'starwarstattoo',
+            'starwarscollecting', 'starwarscollectibles',
+            'movies', 'scifi']
+# file with the list of comments already been replied to
+LOGFILE = 'replied_to.txt'
+# list of trigger words
+TRIGGERS = [
+    'gonk',
+    'g o n k'
+]
+# possible replies
+REPLIES = {
+    'gonk': '**GONK!**',
+    'mention': '**GONK!** *<<whrrrr>>* **GONK!**   \n   \n*<<all your batteries are recharged now>>*',
+    'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|"
+}
+
+#################
 
 def get_login_details(login_file):
     '''
@@ -54,8 +85,8 @@ def get_login_details(login_file):
                     login.get('username'),
                     login.get('password')]:
             raise IncompleteLoginDetailsError
-
-        return login
+        else:
+            return login
     else:
         # if run on Heroku we need to use the config vars
         login = {
@@ -84,15 +115,52 @@ def init_bot(login):
                         username     = login.get('username'),
                         password      = login.get('password')
                         )
-            
-def make_comment(target):
+
+###########################
+
+def check_trigger_word(comment):
     '''
-    target should be a valid Submission or Comment object
+    Checks if any of the trigger words is in the comment body.
+    '''
+    if any(trigger_word in comment.body.lower() for trigger_word in TRIGGERS):
+        return True
+    else:
+        return False
+
+def check_mention(comment):
+    '''
+    Checks if the comment was made in reply to the bot's comment.
+    '''
+    parent_comment = comment.parent()
+    if not parent_comment or not isinstance(parent_comment, praw.models.Comment):
+        return False
+    elif parent_comment.author.name == 'Gonk-Bot':
+        return True
+    else:
+        return False
+
+def check_special(comment):
+    '''
+    Checks if the special trigger sentence was called.
+    '''
+    special = "Help me, Gonky-Wan Kenobi. You're my only hope."
+    if special == comment.body:
+        return True
+    else:
+        return False
+
+def make_comment(target, message):
+    '''
+    target  - a valid Submission or Comment object
+    message - the string the bot will post
     '''
     print('Replying to comment:\n\t{}: {}'.format(target.author.name, target.body))
     
     try:
-        target.reply('GONK!')
+        if DEBUG:
+            print('Message: {}'.format(message))
+        else:
+            target.reply(message)
     except praw.exceptions.RedditAPIException:
         print('ERROR: Doing it too often.')
         for i in range(1,11):
@@ -126,31 +194,29 @@ def main(reddit, sub_list):
 
     # getting Subreddit object from list
     subreddit = reddit.subreddit('+'.join(sub_list))
+
+    # scan the comment stream
     for comment in subreddit.comments():
-        # if the KEYWORD is in the comment and it wasn't made by us
-        # reply to comment
-        if KEYWORD in comment.body.lower() and \
-                comment.author.name != 'Gonk-Bot' and \
-                not already_replied(comment.id):
-            make_comment(comment)
+        # skip if it's the bot's comment or it has been replied to
+        if comment.author.name == 'Gonk-Bot' or \
+            already_replied(comment.id):
+            next
+        # check for special call
+        elif check_special(comment):
+            make_comment(comment, REPLIES['special'])
+            next
+        # bot was talked to
+        elif check_mention(comment):
+            make_comment(comment, REPLIES['mention'])
+            next      
+        # comment was made to submission and it's 'gonk'
+        elif check_trigger_word(comment):
+            make_comment(comment, REPLIES['gonk'])
+            next
+
+        
 
 if __name__ == '__main__':
-    # defining constants
-    KEYWORD = 'gonk'
-    SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
-                'EquelMemes', 'Gonk', 'CultOfGonk', 
-                'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
-                'FallenOrder', 'saltierthancrait', 'Gonkwild',
-                'KOTORmemes', 'starwarsmemes', 'memes',
-                'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
-                'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
-                'StarWarsSpeculation', 'kotor', 'swtor',
-                'darthjarjar', 'starwarscanon', 'starwarstattoo',
-                'starwarscollecting', 'starwarscollectibles',
-                'movies', 'scifi']
-
-    LOGFILE = 'replied_to.txt'
-
     # checking if a log file exists
     try:
         f = open(LOGFILE, 'r')
