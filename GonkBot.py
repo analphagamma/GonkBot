@@ -49,7 +49,7 @@ TRIGGERS = [
 REPLIES = {
     'gonk': '**GONK!**',
     'mention': '**GONK!** *<<whrrrr>>* **GONK!**   \n   \n*<<all your batteries are recharged now>>*',
-    'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|"
+    'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|*"
 }
 
 #################
