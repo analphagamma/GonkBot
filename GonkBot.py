@@ -37,7 +37,9 @@ SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
             'StarWarsSpeculation', 'kotor', 'swtor',
             'darthjarjar', 'starwarscanon', 'starwarstattoo',
             'starwarscollecting', 'starwarscollectibles',
-            'movies', 'scifi']
+            'movies', 'scifi', 'SWDroidposting', 'StarWarsMagic',
+            'CloneWarsMemes', 'andshewasagoodfriend', 'anakinfucks',
+]
 # file with the list of comments already been replied to
 LOGFILE = 'replied_to.txt'
 # list of trigger words
