@@ -49,3 +49,5 @@ pip-selfcheck.json
 # project-specific files
 praw.ini
 login.json
+debug.log
+replied_to.txt
