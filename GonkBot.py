@@ -46,9 +46,7 @@ SUBREDDITS = ['OTMemes', 'PrequelMemes', 'SequelMemes',
             'StarWarsSpeculation', 'swtor',
             'darthjarjar', 'starwarscanon', 'starwarstattoo',
             'starwarscollecting', 'starwarscollectibles',
-            'movies', 'scifi', 'SWDroidposting', 'StarWarsMagic',
-            'CloneWarsMemes', 'andshewasagoodfriend', 'anakinfucks',
-]
+            'movies', 'scifi']
 # file with the list of comments already been replied to
 LOGFILE = 'debug.log' if args.debug else 'replied_to.txt'
 # list of trigger words
@@ -60,13 +58,17 @@ TRIGGERS = [
 REPLIES = {
     'gonk': '**GONK!**',
     'mention': '**GONK!** *<<whrrrr>>* **GONK!**   \n   \n*<<all your batteries are recharged now>>*',
-    'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|*"
+    'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|*",
+    'pushed': '**thud**    \n*falls over*    \nGONK GONK GONK',
+    'fallen': '*GONK has fallen and cannot gonk. To help him up, reply "help gonk"',
+    'helped': '❤️**GONK**❤️    \n*<<thankful gonk noises>>*'
 }
 
 class GonkBot:
 
-    def __init__(self):
-        pass
+    def __init__(self):       
+        # global that controls if the bot will reply
+        self.inactive = False
 
     def init_bot(self, login_file):
         '''
@@ -127,6 +129,19 @@ class GonkBot:
             return True
         else:
             return False
+    
+    def check_pushed(self, comment):
+        '''
+        GONK can be pushed.
+        '''
+        return ('push' in comment.body \
+            and 'gonk' in comment.body)
+
+    def check_helped(self, comment):
+        '''
+        if GONK is helped up it's no longer inactive
+        '''
+        return 'help gonk' in comment.body
 
     def check_mention(self, comment):
         '''
@@ -219,9 +234,20 @@ def main(bot, reddit, sub_list):
         if comment.author.name == 'Gonk-Bot' or \
             bot.already_replied(comment.id):
             next
+        elif bot.inactive and bot.check_helped(comment):
+            bot.make_comment(comment, REPLIES['helped'])
+            bot.inactive = False
+            next
+        elif bot.inactive:
+            bot.make_comment(comment, REPLIES['fallen'])
+            next
         # check for special call
         elif bot.check_special(comment):
             bot.make_comment(comment, REPLIES['special'])
+            next
+        elif bot.check_pushed(comment):
+            bot.make_comment(comment, REPLIES['pushed'])
+            bot.inactive = True
             next
         # bot was talked to
         elif bot.check_mention(comment):
