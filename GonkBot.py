@@ -238,7 +238,7 @@ def main(bot, reddit, sub_list):
             bot.make_comment(comment, REPLIES['helped'])
             bot.inactive = False
             next
-        elif bot.inactive:
+        elif bot.inactive and bot.check_mention(comment):
             bot.make_comment(comment, REPLIES['fallen'])
             next
         # check for special call
