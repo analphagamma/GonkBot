@@ -36,14 +36,14 @@ class IncompleteLoginDetailsError(Exception):
 ##############
 # defining constants
 # subreddits to scan
-SUBREDDITS = ['StarWars', 'OTMemes', 'PrequelMemes', 'SequelMemes',
+SUBREDDITS = ['OTMemes', 'PrequelMemes', 'SequelMemes',
             'EquelMemes', 'Gonk', 'CultOfGonk', 
             'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
             'FallenOrder', 'saltierthancrait', 'Gonkwild',
             'KOTORmemes', 'starwarsmemes', 'memes',
             'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
             'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
-            'StarWarsSpeculation', 'kotor', 'swtor',
+            'StarWarsSpeculation', 'swtor',
             'darthjarjar', 'starwarscanon', 'starwarstattoo',
             'starwarscollecting', 'starwarscollectibles',
             'movies', 'scifi', 'SWDroidposting', 'StarWarsMagic',
