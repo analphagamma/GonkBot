@@ -230,8 +230,8 @@ def main(bot, reddit, sub_list):
 
     # scan the comment stream
     for comment in comment_stream:
-        # skip if it's the bot's comment or it has been replied to
         if comment.author.name == 'Gonk-Bot' or \
+            comment.author.name == 'clone_trooper_bot' or \
             bot.already_replied(comment.id):
             next
         elif bot.inactive and bot.check_helped(comment):
