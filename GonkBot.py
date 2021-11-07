@@ -134,14 +134,14 @@ class GonkBot:
         '''
         GONK can be pushed.
         '''
-        return ('push' in comment.body \
-            and 'gonk' in comment.body)
+        return ('push' in comment.body.lower() \
+            and 'gonk' in comment.body.lower())
 
     def check_helped(self, comment):
         '''
         if GONK is helped up it's no longer inactive
         '''
-        return 'help gonk' in comment.body
+        return 'help gonk' in comment.body.lower()
 
     def check_mention(self, comment):
         '''
