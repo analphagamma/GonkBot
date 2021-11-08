@@ -40,13 +40,13 @@ SUBREDDITS = ['OTMemes', 'PrequelMemes', 'SequelMemes',
             'EquelMemes', 'Gonk', 'CultOfGonk', 
             'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
             'FallenOrder', 'saltierthancrait', 'Gonkwild',
-            'KOTORmemes', 'starwarsmemes', 'memes',
+            'KOTORmemes', 'starwarsmemes',
             'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
             'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
             'StarWarsSpeculation', 'swtor',
             'darthjarjar', 'starwarscanon', 'starwarstattoo',
-            'starwarscollecting', 'starwarscollectibles',
-            'movies', 'scifi']
+            'starwarscollecting', 'starwarscollectibles'
+            ]
 # file with the list of comments already been replied to
 LOGFILE = 'debug.log' if args.debug else 'replied_to.txt'
 # list of trigger words
@@ -60,9 +60,16 @@ REPLIES = {
     'mention': '**GONK!** *<<whrrrr>>* **GONK!**   \n   \n*<<all your batteries are recharged now>>*',
     'special': "**GONK! GONK!**   \n*<<bzzzzz>> <<whrrrr>>*   \n**GONK!**   \n*<<busy gonk noises>>*   \n**GONK!**    \n    \n*|Gonk supercharged your batteries. They're on 200% for a day!|*",
     'pushed': '**thud**    \n*falls over*    \nGONK GONK GONK',
-    'fallen': '*GONK has fallen and cannot gonk. To help him up, reply "help gonk"',
+    'fallen': '*GONK has fallen and cannot gonk. To help him up, reply "help gonk"*',
     'helped': '❤️**GONK**❤️    \n*<<thankful gonk noises>>*'
 }
+
+IGNORE_BOTS = [
+    'Gonk-Bot',
+    'clone_trooper_bot',
+    'Ebenn_Q3_Baobab_Bot',
+    'nute_gunray_bot'
+]
 
 class GonkBot:
 
@@ -230,8 +237,7 @@ def main(bot, reddit, sub_list):
 
     # scan the comment stream
     for comment in comment_stream:
-        if comment.author.name == 'Gonk-Bot' or \
-            comment.author.name == 'clone_trooper_bot' or \
+        if comment.author.name in IGNORE_BOTS  or \
             bot.already_replied(comment.id):
             next
         elif bot.inactive and bot.check_helped(comment):
