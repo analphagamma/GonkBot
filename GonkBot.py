@@ -65,11 +65,12 @@ REPLIES = {
 }
 
 IGNORE_BOTS = [
-    'Gonk-Bot',
+    'Gonk-Bot', # self
     'clone_trooper_bot',
     'Ebenn_Q3_Baobab_Bot',
     'nute_gunray_bot',
-    'gonk_bot'
+    'gonk_bot',
+    'R0-GR-bot'
 ]
 
 class GonkBot:
