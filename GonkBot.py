@@ -68,7 +68,8 @@ IGNORE_BOTS = [
     'Gonk-Bot',
     'clone_trooper_bot',
     'Ebenn_Q3_Baobab_Bot',
-    'nute_gunray_bot'
+    'nute_gunray_bot',
+    'gonk_bot'
 ]
 
 class GonkBot:
