@@ -42,7 +42,6 @@ class IncompleteLoginDetailsError(Exception):
 subreddits_path = 'resources/subreddits.txt'
 f = open(subreddits_path, 'r')
 subreddits = f.read().splitlines()
-print(subreddits)
 f.close()
 
 # file with the list of comments already been replied to
