@@ -9,6 +9,8 @@ import hashlib, time
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', action='store_true',
                     help='Enables debug mode')
+parser.add_argument('--dryrun', action='store_true',
+                    help='Prints replies to stdout')
 
 args = parser.parse_args()
 if args.debug:
@@ -33,27 +35,25 @@ class IncompleteLoginDetailsError(Exception):
     Custom exception for incorrect credentials file structure
     '''
     pass
+
 ##############
 # defining constants
 # subreddits to scan
-SUBREDDITS = ['OTMemes', 'PrequelMemes', 'SequelMemes',
-            'EquelMemes', 'Gonk', 'CultOfGonk', 
-            'StarWarsBattlefront', 'battlefront', 'EmpireDidNothingWrong',
-            'FallenOrder', 'saltierthancrait', 'Gonkwild',
-            'KOTORmemes', 'starwarsmemes',
-            'StarWarsTelevision', 'TheMandalorianTV', 'SWResistance',
-            'starwarsrebels', 'TheCloneWars', 'prequelappreciation',
-            'StarWarsSpeculation', 'swtor',
-            'darthjarjar', 'starwarscanon', 'starwarstattoo',
-            'starwarscollecting', 'starwarscollectibles'
-            ]
+subreddits_path = 'resources/subreddits.txt'
+f = open(subreddits_path, 'r')
+subreddits = f.read().splitlines()
+print(subreddits)
+f.close()
+
 # file with the list of comments already been replied to
 LOGFILE = 'debug.log' if args.debug else 'replied_to.txt'
+
 # list of trigger words
 TRIGGERS = [
     'gonk',
     'g o n k'
 ]
+
 # possible replies
 REPLIES = {
     'gonk': '**GONK!**',
@@ -64,14 +64,12 @@ REPLIES = {
     'helped': '❤️**GONK**❤️    \n*<<thankful gonk noises>>*'
 }
 
-IGNORE_BOTS = [
-    'Gonk-Bot', # self
-    'clone_trooper_bot',
-    'Ebenn_Q3_Baobab_Bot',
-    'nute_gunray_bot',
-    'gonk_bot',
-    'R0-GR-bot'
-]
+# list of users (bots) to ignore
+ignore_list_path = 'resources/ignore_list.txt'
+f = open(ignore_list_path, 'r')
+ignore_list = f.read().splitlines()
+f.close()
+
 
 class GonkBot:
 
@@ -181,7 +179,7 @@ class GonkBot:
         print('Replying to comment:\n\t{}: {}'.format(target.author.name, target.body))
         
         try:
-            if args.debug:
+            if args.debug or args.dryrun:
                 print('Message: {}'.format(message))
             else:
                 target.reply(message)
@@ -239,7 +237,7 @@ def main(bot, reddit, sub_list):
 
     # scan the comment stream
     for comment in comment_stream:
-        if comment.author.name in IGNORE_BOTS  or \
+        if comment.author.name in ignore_list  or \
             bot.already_replied(comment.id):
             next
         elif bot.inactive and bot.check_helped(comment):
@@ -282,4 +280,4 @@ if __name__ == '__main__':
     print('Bot initialised. Login successful.')
     
     while True:
-        main(bot, r, SUBREDDITS)
+        main(bot, r, subreddits)
